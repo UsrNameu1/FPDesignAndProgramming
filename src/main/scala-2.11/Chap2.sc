@@ -28,20 +28,20 @@ isSorted(Array(), (a: Int, b: Int) => a > b )
 isSorted(Array(1), (a: Int, b: Int) => a > b )
 
 def curry[A, B, C](f: (A, B) => C): A => (B => C) =
-  (a: A) => (b: B) => f(a, b)
+  a => b => f(a, b)
 
 val curryedAdd = curry { (a: Int, b: Int) => a + b }
 val add1 = curryedAdd(1)
 add1(2)
 
 def uncurry[A, B, C](f: A => B => C): (A, B) => C =
-  (a: A, b: B) => f(a)(b)
+  (a, b) => f(a)(b)
 
 val add = uncurry(curryedAdd)
 add(1, 2)
 
 def compose[A, B, C](f: B => C, g: A => B): A => C =
-  (a: A) => f(g(a))
+  a => f(g(a))
 
 val composed = compose[Int, Int, Int]( a => a + 1, b => b + 2 )
 composed(4)
