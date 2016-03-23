@@ -71,4 +71,17 @@ object List {
 
   def length[A](as: List[A]): Int =
     foldRight(as, 0) ( (_, acc) => acc + 1 )
+
+  def append[A](as: List[A], bs: List[A]): List[A] = as match {
+    case Nil => bs
+    case Cons(x, xs) => Cons(x, append(xs, bs))
+  }
+
+  def reverse[A](as: List[A]): List[A] = as match {
+    case Nil => Nil
+    case Cons(x, xs) => append(reverse(xs), apply(x))
+  }
+
+  def concat[A](ass: List[List[A]]): List[A] =
+    foldLeft[List[A], List[A]](ass, Nil) ( (acc, as) => append(acc, as) )
 }

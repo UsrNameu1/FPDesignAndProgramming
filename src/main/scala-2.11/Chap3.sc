@@ -41,3 +41,15 @@ def foldLength(ls: List[Int]): Int =
 
 foldLength(List(2, 3, 4))
 
+reverse(List(1, 2, 3))
+
+def foldReverse[A](as: List[A]): List[A] =
+  foldRight[A, List[A]](as, Nil) ( (a, acc) => append(acc, List(a)))
+
+foldReverse(List(1, 2, 3))
+
+
+// 3.13, 3.14 skip for a while
+
+concat(List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)))
+
