@@ -15,7 +15,6 @@ object List {
 
   def product(ds: List[Double]): Double = ds match {
     case Nil => 1.0
-    case Cons(0.0, _) => 0.0
     case Cons(x, xs) => x * product(xs)
   }
 
@@ -25,19 +24,16 @@ object List {
 
   def tail[A](xs: List[A]): List[A] = xs match { // possibly be defined in Option[A+]
     case Nil => Nil
-    case Cons(a, Nil) => Nil
     case Cons(a, as) => as
   }
 
   def init[A](xs: List[A]): List[A] = xs match {
     case Nil => Nil
-    case Cons(a, Nil) => Nil
     case Cons(a, as) => Cons(a, init(as))
   }
 
   def setHead[A](xs: List[A], other: A): List[A] = xs match {
     case Nil => Nil
-    case Cons(_, Nil) => Cons(other, Nil)
     case Cons(_, as) => Cons(other, as)
   }
 
@@ -54,7 +50,6 @@ object List {
     @tailrec
     def go(ls: List[A]): List[A] = ls match {
       case Nil => Nil
-      case Cons(a, Nil) if f(a) => Nil
       case Cons(a, as) if f(a) => go(as)
     }
     go(l)
