@@ -29,6 +29,7 @@ object List {
 
   def init[A](xs: List[A]): List[A] = xs match {
     case Nil => Nil
+    case Cons(a, Nil) => Nil
     case Cons(a, as) => Cons(a, init(as))
   }
 
