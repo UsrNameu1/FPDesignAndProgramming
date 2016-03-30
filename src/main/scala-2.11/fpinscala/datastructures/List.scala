@@ -84,7 +84,7 @@ object List {
   }
 
   def concat[A](ass: List[List[A]]): List[A] =
-    foldLeft[List[A], List[A]](ass, Nil) ( (acc, as) => append(acc, as) )
+    foldRight(ass, Nil[List[A]]) (append)
 
   def map[A, B](as: List[A])(f: A => B): List[B] = as match {
     case Nil => Nil
