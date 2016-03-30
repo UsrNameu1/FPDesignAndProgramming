@@ -85,4 +85,15 @@ object List {
 
   def concat[A](ass: List[List[A]]): List[A] =
     foldLeft[List[A], List[A]](ass, Nil) ( (acc, as) => append(acc, as) )
+
+  def map[A, B](as: List[A])(f: A => B): List[B] = as match {
+    case Nil => Nil
+    case Cons(x, xs) => Cons(f(x), map(xs)(f))
+  }
+
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = as match {
+    case Nil => Nil
+    case Cons(x, xs) if f(x) => Cons(x, filter(xs)(f))
+    case Cons(x, xs) => filter(xs)(f)
+  }
 }

@@ -48,8 +48,7 @@ def foldReverse[A](as: List[A]): List[A] =
 
 foldReverse(List(1, 2, 3))
 
-
-// 3.13 skip for a while
+// skip 3.13 for a while
 
 def foldAppend[A](as: List[A], bs: List[A]): List[A] =
   foldRight(as, bs) ( (a, acc) => Cons(a, acc) )
@@ -58,3 +57,14 @@ foldAppend(List(1, 2, 3), List(4, 5, 6))
 
 concat(List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)))
 
+def mapAddOne(is: List[Int]): List[Int] =
+  map(is) { _ + 1 }
+
+mapAddOne(List(1, 3, 4))
+
+def mapToString(ds: List[Double]): List[String] =
+  map(ds) { _.toString }
+
+map(List(1, 2, 4)) { _.toString }
+
+filter(List(1, 2, 3, 4, 5)) { _ % 2 == 0 }
