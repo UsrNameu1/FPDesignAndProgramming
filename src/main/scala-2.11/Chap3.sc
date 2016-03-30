@@ -49,7 +49,12 @@ def foldReverse[A](as: List[A]): List[A] =
 foldReverse(List(1, 2, 3))
 
 
-// 3.13, 3.14 skip for a while
+// 3.13 skip for a while
+
+def foldAppend[A](as: List[A], bs: List[A]): List[A] =
+  foldRight(as, bs) ( (a, acc) => Cons(a, acc) )
+
+foldAppend(List(1, 2, 3), List(4, 5, 6))
 
 concat(List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)))
 
