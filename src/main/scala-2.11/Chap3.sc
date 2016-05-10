@@ -1,5 +1,6 @@
 import fpinscala.datastructures._
 import fpinscala.datastructures.List._
+import fpinscala.datastructures.Tree.{map => tmap, _}
 
 val v = List(1, 2, 3, 4, 5) match {
   case Cons(x, Cons(2, Cons(4, _))) => x
@@ -70,10 +71,15 @@ filter(List(1, 2, 3, 4, 5)) { _ % 2 == 0 }
 flatMap(List(1, 2, 3))(i => List(i, i))
 
 def filterByFlatMap[A](as: List[A])(f: A => Boolean): List[A] =
-  flatMap(as) { a => if (f(a)) { List(a) } else { Nil } }
+  flatMap(as) { a => if (f(a)) List(a) else Nil }
 
 filterByFlatMap(List(1, 2, 3))(a => a % 2 == 1)
 
 zipWith(List(1, 2, 3), List(4, 5, 6))(_ + _)
 
 hasSubsequence(List(1, 2, 3, 4), List(1, 2))
+
+size(Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4))))
+maximum(Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4))))
+depth(Branch(Branch(Leaf(1), Leaf(2)), Leaf(3)))
+tmap(Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4))))(_ * 2)
