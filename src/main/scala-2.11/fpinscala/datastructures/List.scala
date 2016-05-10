@@ -84,7 +84,7 @@ object List {
   }
 
   def concat[A](ass: List[List[A]]): List[A] =
-    foldRight(ass, Nil[List[A]]) (append)
+    foldRight(ass, Nil: List[A]) (append)
 
   def map[A, B](as: List[A])(f: A => B): List[B] = as match {
     case Nil => Nil
@@ -96,4 +96,26 @@ object List {
     case Cons(x, xs) if f(x) => Cons(x, filter(xs)(f))
     case Cons(x, xs) => filter(xs)(f)
   }
+
+  def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = as match {
+    case Nil => Nil
+    case Cons(x, xs) => append(f(x), flatMap(xs)(f))
+  }
+
+  def zipWith[A, B, C](as: List[A], bs: List[B])(f: (A, B) => C): List[C] = (as, bs) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(x, xs), Cons(y, ys)) => Cons(f(x, y), zipWith(xs, ys)(f))
+  }
+
+  def exists[A](as: List[A])(f: A => Boolean): Boolean = as match { // redefine for performance problem
+    case Nil => false
+    case Cons(x, xs) => f(x) || exists(xs)(f)
+  }
+
+  def contains[A](as: List[A])(a: A): Boolean =
+    exists(as)(_ == a)
+
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean =
+    foldRight(sub, true)( (a, acc) => acc && contains(sup)(a))
 }

@@ -54,9 +54,7 @@ def foldAppend[A](as: List[A], bs: List[A]): List[A] =
   foldRight(as, bs) ( (a, acc) => Cons(a, acc) )
 
 foldAppend(List(1, 2, 3), List(4, 5, 6))
-
 concat(List(List(1, 2, 3), List(4, 5, 6), List(7, 8, 9)))
-
 def mapAddOne(is: List[Int]): List[Int] =
   map(is) { _ + 1 }
 
@@ -68,3 +66,14 @@ def mapToString(ds: List[Double]): List[String] =
 map(List(1, 2, 4)) { _.toString }
 
 filter(List(1, 2, 3, 4, 5)) { _ % 2 == 0 }
+
+flatMap(List(1, 2, 3))(i => List(i, i))
+
+def filterByFlatMap[A](as: List[A])(f: A => Boolean): List[A] =
+  flatMap(as) { a => if (f(a)) { List(a) } else { Nil } }
+
+filterByFlatMap(List(1, 2, 3))(a => a % 2 == 1)
+
+zipWith(List(1, 2, 3), List(4, 5, 6))(_ + _)
+
+hasSubsequence(List(1, 2, 3, 4), List(1, 2))
