@@ -83,3 +83,23 @@ size(Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4))))
 maximum(Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4))))
 depth(Branch(Branch(Leaf(1), Leaf(2)), Leaf(3)))
 tmap(Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4))))(_ * 2)
+
+def sizeByFold[A](tree: Tree[A]): Int =
+  fold[A, Int](tree, _ => 1 )( (lacc, racc) => 1 + lacc + racc)
+
+sizeByFold(Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4))))
+
+def maximumByFold(tree: Tree[Int]): Int =
+  fold[Int, Int](tree, elem => elem )( (lacc, racc) => lacc max racc )
+
+maximumByFold(Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4))))
+
+def depthByFold[A](tree: Tree[A]): Int =
+  fold[A, Int](tree, _ => 0 )( (lacc, racc) => 1 + (lacc max racc) )
+
+depthByFold(Branch(Branch(Leaf(1), Leaf(2)), Leaf(3)))
+
+def mapByFold[A, B](tree: Tree[A])(f: A => B): Tree[B] =
+  fold[A, Tree[B]](tree, elem => Leaf(f(elem)))( (lacc, racc) => Branch(lacc, racc))
+
+mapByFold(Branch(Branch(Leaf(1), Leaf(2)), Branch(Leaf(3), Leaf(4))))(_ * 2)

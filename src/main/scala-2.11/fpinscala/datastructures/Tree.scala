@@ -27,4 +27,8 @@ object Tree {
     case Branch(left, right) => Branch(map(left)(f), map(right)(f))
   }
 
+  def fold[A, B](tree: Tree[A], lf: A => B)(bf: (B, B) => B): B = tree match {
+    case Leaf(a) => lf(a)
+    case Branch(left, right) => bf(fold(left, lf)(bf), fold(right, lf)(bf))
+  } // this method is similar with List foldRight when you replace lf with z and Leaf with Nil
 }
