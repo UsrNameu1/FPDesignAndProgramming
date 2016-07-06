@@ -18,6 +18,11 @@ sealed trait Option[+A] {
 
   def orElse[B >: A](ob: => Option[B]): Option[B] =
     map(Some.apply) getOrElse ob
+
+  def filter(f: A => Boolean): Option[A] =
+    flatMap { a =>
+      if (f(a)) Some(a) else None
+    }
 }
 case class Some[+A](get: A) extends Option[A]
 case object None extends Option[Nothing]
@@ -41,18 +46,12 @@ object Option {
     }
 
   def sequence[A](a: List[Option[A]]): Option[List[A]] =
-    a.foldRight[Option[List[A]]](Some(Nil)) {
-      case (_, None) => None
-      case (Some(aa), Some(as)) => Some(aa::as)
-      case (None, _) => None
+    a.foldRight[Option[List[A]]](Some(Nil)) { (oa, acc) =>
+      map2(oa, acc)(_ :: _)
     }
 
   def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] =
     a.foldRight[Option[List[B]]](Some(Nil)) { (aa, acc) =>
-      (f(aa), acc) match {
-        case (_, None) => None
-        case (Some(b), Some(bs)) => Some(b::bs)
-        case (None, _) => None
-      }
+      map2(f(aa), acc)(_ :: _)
     }
 }
