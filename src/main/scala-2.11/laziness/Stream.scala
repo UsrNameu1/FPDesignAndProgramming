@@ -13,10 +13,10 @@ sealed trait Stream[+A] {
     case Cons(h, t) => Some(h())
   }
 
-  def take(n: Int): Stream[A] = (n, this) match {
-    case (0, _) => Empty
-    case (c, Empty) => Empty
-    case (c, Cons(h, t)) => Cons(h, () => t().take(c - 1))
+  def take(n: Int): Stream[A] = (n > 0, this) match {
+    case (false, _) => Empty
+    case (true, Empty) => Empty
+    case (true, Cons(h, t)) => Cons(h, () => t().take(n - 1))
   }
 
   def drop(n: Int): Stream[A] = (n, this) match {
@@ -37,12 +37,8 @@ sealed trait Stream[+A] {
     case _ => z
   }
 
-  def forAll(p: A => Boolean): Boolean = this match {
-    case Empty => true
-    case Cons(h, t) =>
-      if (!p(h())) false
-      else t().forAll(p)
-  }
+  def forAll(p: A => Boolean): Boolean =
+    foldRight(true) { (a, b) => b && p(a) }
 
   def takeWhileByFold(p: A => Boolean): Stream[A] =
     foldRight[Stream[A]](Empty) { (a, acc) =>
