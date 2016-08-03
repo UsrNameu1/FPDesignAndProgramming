@@ -51,24 +51,35 @@ sealed trait Stream[+A] {
     }
 
   def map[B](f: A => B): Stream[B] =
-    foldRight[Stream[B]](Empty) { (a, bs) =>
+    foldRight(Stream.empty[B]) { (a, bs) =>
       Stream.cons(f(a), bs)
     }
 
   def filter(p: A => Boolean): Stream[A] =
-    foldRight[Stream[A]](Empty) { (a, as) =>
+    foldRight(Stream.empty[A]) { (a, as) =>
       if (p(a)) Stream.cons(a, as)
       else as
     }
 
   def append[B >: A](bs: => Stream[B]): Stream[B] =
-    foldRight[Stream[B]](bs) { (a, acc) =>
-      Cons(() => a, () => acc)
-    }
+    foldRight(bs)(Stream.cons(_, _))
 
   def flatMap[B](f: A => Stream[B]): Stream[B] =
-    foldRight[Stream[B]](Empty) { (a, bs) =>
+    foldRight(Stream.empty[B]) { (a, bs) =>
       f(a) append bs
+    }
+
+  def mapByUnfold[B](f: A => B): Stream[B] =
+    Stream.unfold(this) {
+      case Empty => None
+      case Cons(h, t) => Some((f(h()), t()))
+    }
+
+  def takeByUnfold[A](n: Int): Stream[A] =
+    Stream.unfold((this, n)) {
+      case (Cons(h, t), 1) => Some((h(), (Stream.empty[A], 0)))
+      case (Cons(h, t), n) if n > 1 => Some((h(), (t(), n - 1)))
+      case _ => None
     }
 
 }
@@ -96,9 +107,9 @@ object Stream {
   def from(n: Int): Stream[Int] =
     cons(n, from(n + 1))
 
-  def fibs: Stream[Int] = {
-    def fib(b: Int, bb: Int): Stream[Int] = cons(b, fib(bb, b + bb))
-    cons(0, fib(1, 1))
+  def fibs: Stream[BigInt] = {
+    def fib(b: BigInt, bb: BigInt): Stream[BigInt] = cons(b, fib(bb, b + bb))
+    fib(0, 1)
   }
 
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = f(z) match {
@@ -119,10 +130,5 @@ object Stream {
   def onesByUnfold: Stream[Int] =
     unfold(1) { s => Some((1, s)) }
 
-  def mapByUnfold[A, B](as: Stream[A])(f: A => B): Stream[B] =
-    unfold(as) {
-      case Empty => None
-      case Cons(h, t) => Some((f(h()), t()))
-    }
-  
+
 }
