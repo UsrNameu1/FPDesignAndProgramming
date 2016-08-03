@@ -75,13 +75,53 @@ sealed trait Stream[+A] {
       case Cons(h, t) => Some((f(h()), t()))
     }
 
-  def takeByUnfold[A](n: Int): Stream[A] =
+  def takeByUnfold(n: Int): Stream[A] =
     Stream.unfold((this, n)) {
-      case (Cons(h, t), 1) => Some((h(), (Stream.empty[A], 0)))
-      case (Cons(h, t), n) if n > 1 => Some((h(), (t(), n - 1)))
+      case (_, 0) => None
+      case (Empty, _) => None
+      case (Cons(h, t), i) => Some((h(), (t(), i - 1)))
+    }
+
+  def takeWhileByUnfold(p: A => Boolean): Stream[A] =
+    Stream.unfold(this) {
+      case Cons(h, t) if p(h()) => Some((h(), t()))
       case _ => None
     }
 
+  def zipWithByUnfold[B, C](bs: Stream[B])(f: (A, B) => C): Stream[C] =
+    Stream.unfold((this, bs)) {
+      case (Empty, _) => None
+      case (_, Empty) => None
+      case (Cons(ha, ta), Cons(hb, tb)) => Some((f(ha(), hb()), (ta(), tb())))
+    }
+
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A], Option[B])] =
+    Stream.unfold((this, s2)) {
+      case (Empty, Empty) => None
+      case (Cons(ha, ta), Empty) => Some((Some(ha()), None), (ta(), Empty))
+      case (Empty, Cons(hb, tb)) => Some((None, Some(hb())), (Empty, tb()))
+      case (Cons(ha, ta), Cons(hb, tb)) => Some((Some(ha()), Some(hb())), (ta(), tb()))
+    }
+
+  def startsWith[A](s: Stream[A]): Boolean =
+    this.zipAll(s).forAll {
+      case (None, Some(a)) => false
+      case (Some(a), None) => true
+      case (Some(a), Some(b)) => a == b
+    }
+
+  def tails: Stream[Stream[A]] =
+    Stream.cons(this, Stream.unfold(this) {
+      case Empty => None
+      case Cons(h, t) => Some((t(), t()))
+    })
+
+  def scanRight[B](z: B)(f: (A, B) => B): Stream[B] = this match {
+    case Empty => Stream(z)
+    case Cons(h, t) =>
+      val acc@Cons(acch, _) = t().scanRight(z)(f)
+      Stream.cons(f(h(), acch()), acc)
+  }
 }
 
 case object Empty extends Stream[Nothing]
@@ -129,6 +169,5 @@ object Stream {
 
   def onesByUnfold: Stream[Int] =
     unfold(1) { s => Some((1, s)) }
-
 
 }

@@ -11,3 +11,6 @@ Stream.fibsByUnfold.take(7).toList
 Stream.fromByUnfold(2).take(2).toList
 Stream.constantByUnfold(3).take(4).toList
 Stream.onesByUnfold.take(3).toList
+as.startsWith(Stream(1, 2, 3))
+as.tails.toList.map{_.toList}
+as.scanRight(0)(_ + _).toList
