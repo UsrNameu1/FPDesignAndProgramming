@@ -32,6 +32,40 @@ object Random {
     (f(a, b), rngb)
   }
 
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =
+    fs.foldRight[Rand[List[A]]](unit(Nil)) { case (rand, acc) =>
+      rng => {
+        val (a, rnga) = rand(rng)
+        val (as, rngas) = acc(rnga)
+        (a::as, rngas)
+      }
+    }
+
+  def ints2(count: Int): Rand[List[Int]] =
+    sequence(List.fill(count)(int))
+
+  def flatMap[A, B](f: Rand[A])(g: A => Rand[B]): Rand[B] = rng => {
+    val (a, rnga) = f(rng)
+    g(a)(rnga)
+  }
+
+  def nonNegativeLessThen(n: Int): Rand[Int] =
+    flatMap(nonNegativeInt) { i =>
+      val mod = i % n
+      if (i + (n - 1) - mod >= 0) (mod, _)
+      else nonNegativeLessThen(n)
+    }
+
+  def mapByFlatMap[A, B](s: Rand[A])(f: A => B): Rand[B] =
+    flatMap(s) { a => unit(f(a)) }
+
+  def map2ByFlatMap[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] =
+    flatMap(ra) { a =>
+      flatMap(rb) { b =>
+        unit(f(a, b))
+      }
+    }
+
   case class SimpleRNG(seed: Long) extends RNG {
     override def nextInt: (Int, RNG) = {
       val newSeed = (seed * 0x5DEECE66DL + 0xBL) & 0xFFFFFFFFFFFFL
