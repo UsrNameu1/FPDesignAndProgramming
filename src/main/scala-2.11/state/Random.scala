@@ -82,7 +82,7 @@ object Random {
 
   def double(rng: RNG): (Double, RNG) = {
     val (nonNegative, random) = nonNegativeInt(rng)
-    (nonNegative / Int.MaxValue.toDouble, random)
+    (nonNegative / (Int.MaxValue.toDouble + 1), random)
   }
 
   def intDouble(rng: RNG): ((Int, Double), RNG) = {
