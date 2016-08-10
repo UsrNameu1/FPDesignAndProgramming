@@ -18,12 +18,8 @@ object Random {
     (f(a), rng2)
   }
 
-  def double2: Rand[Double] = map(int) { randInt =>
-    val nonNegInt = randInt match {
-      case Int.MinValue => 0
-      case i => math.abs(i)
-    }
-    nonNegInt / Int.MaxValue
+  def double2: Rand[Double] = map(nonNegativeInt) {
+    _.toDouble / (Int.MaxValue + 1)
   }
 
   def map2[A, B, C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = State { rng =>
